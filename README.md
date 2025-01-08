@@ -10,7 +10,7 @@ Projeto baseado em ESP32 para monitoramento de saúde e ambiente usando sensores
 
 ## Requisitos
 - **Hardware:**
-  - ESP32
+  - ESP32 - Heltec LoRa 32
   - MAX30105
   - DS18B20
   - DHT22

@@ -23,15 +23,7 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
-// #include <WebSocketsClient.h>
 #include <Update.h>
-// #include <.pio\libdeps\heltec_wifi_lora_32_V2\DFRobot_MAX30102-master\DFRobot_MAX30102-master\src\DFRobot_MAX30102.h>
-//  #include <async_http_client.h>
-//  #include <AsyncTCP.h>  // Necessário para ESP32
-//  #include <AsyncHTTPRequest_Generic.h>
-//  #include <AsyncWebServer.h>
-//  #include <WiFiClientSecure.h>
-//  #include "driver/gpio.h"
 #include <WebServer.h>
 #include <otadrive_esp.h>
 //====================================================  DECLARAÇÕES DE FUNÇÕES  ====================================================================
@@ -1320,9 +1312,9 @@ void connectToWiFi()
 // ================================================== OTAdrive ==================================================
 // Função para verificar atualizações de firmware
 
-// OTAdrive APIkey for this product
-#define APIKEY "fd8ec5de-8a96-43e2-8147-60010ee861dd"
-// this app version
+// OTAdrive APIkey desse projeto
+#define APIKEY "" //Insira a sua Chave de API do OTADrive
+// Versão desse firmware
 #define FW_VER "v@1.0.0"
 
 // Função de callback para atualização de progresso
@@ -1334,7 +1326,7 @@ void onUpdateProgress(int progress, int totalt)
   Serial.print("*");
   if (last != progressPercent && progressPercent % 10 == 0)
   {
-    // print every 10%
+    // print todos 10%
     Serial.printf("%d", progressPercent);
   }
   last = progressPercent;

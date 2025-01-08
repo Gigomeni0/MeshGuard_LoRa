@@ -1,0 +1,2 @@
+Os arquivos bridge.cpp e main.cpp não podem estar na mesma pasta quando estiver passando o código para seu microcontrolador.
+Para evitar erros use a pasta test para não haver erros de declaração.

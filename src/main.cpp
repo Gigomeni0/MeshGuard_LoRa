@@ -127,11 +127,11 @@ MAX30105 particleSensor;
 uint32_t irBuffer[100];  // Buffer para dados do sensor LED infravermelho
 uint32_t redBuffer[100]; // Buffer para dados do sensor LED Vermelho
 
-int32_t bufferLength;  // Comprimento de leitura de dados
-int32_t spo2 = 99.0;          // Dado Lido de SPO2
-int8_t validSPO2;      // Indicador para mostrar se o valor de SPO@ calculado é válido
-int32_t heartRate = 75;     // Frquência Cardíaca
-int8_t validHeartRate; // indicador para mostrar se a frequencia cardíaca calculada é válida
+int32_t bufferLength;   // Comprimento de leitura de dados
+int32_t spo2 = 99.0;    // Dado Lido de SPO2
+int8_t validSPO2;       // Indicador para mostrar se o valor de SPO@ calculado é válido
+int32_t heartRate = 75; // Frquência Cardíaca
+int8_t validHeartRate;  // indicador para mostrar se a frequencia cardíaca calculada é válida
 
 const byte RATE_SIZE = 4; // Número de amostras para cálculo da média de BPM
 byte rates[RATE_SIZE];    // Array para armazenar as leituras de BPM
@@ -151,14 +151,13 @@ const float MIN_SPO2 = 98.0;
 const int BPM_INCREMENT = 1.5;
 const float BPM_DECREMENT = 0.025;
 
-
 float beatsPerMinute;
 int beatAvg;
 
 float finalSpo2;
 float spo2Read = 98;
 float finalHR;
-float heartRateRead =75;
+float heartRateRead = 75;
 //======================================= CONFIGURAÇÃO DE OLED ================================================================
 
 static SSD1306Wire display(0x3c, 500000, SDA1, SCL1, GEOMETRY_128_64, RST_OLED); // addr , freq , i2c group , resolution , rst
@@ -708,113 +707,61 @@ void IRAM_ATTR handleFallInterrupt()
 }
 
 // Função que verifica o movimento
-void analyzeMovement() {
-    /* Get new sensor events with the readings */
+void analyzeMovement()
+{
+  /* Get new sensor events with the readings */
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
   float accelerationMoveThreshold = 1.5;
-  
+
   // Lê as acelerações e rotações
   float totalAcceleration = sqrtf((a.acceleration.x +
-                                  a.acceleration.y +
-                                  a.acceleration.z));
-  
-float rotationTreshold = 1;
+                                   a.acceleration.y +
+                                   a.acceleration.z));
+
+  float rotationTreshold = 1;
   // Calculate the magnitude of the rotation vector
   float totalRotation = sqrtf(g.gyro.x * g.gyro.x +
                               g.gyro.y * g.gyro.y +
                               g.gyro.z * g.gyro.z);
 
+  // Verifica se a aceleração total excede o limite para detectar quedas
 
-  /*
-  static float accelerationValues[10] = {0};
-  static int index = 0;
-  static bool bufferFull = false;
-
-  // Store the current total acceleration in the array
-  accelerationValues[index] = totalAcceleration;
-  index = (index + 1) % 10;
-
-  // Check if the buffer is full
-  if (index == 0) {
-    bufferFull = true;
-  }
-
-  // Calculate the average of the acceleration values
-  float sum = 0;
-  int count = bufferFull ? 10 : index;
-  for (int i = 0; i < count; i++) {
-    sum += accelerationValues[i];
-  }
-  float averageAcceleration = sum / count;
-
-  Serial.print("Average Total Acceleration: ");
-  Serial.println(averageAcceleration);
-  
-                              Serial.print("Acceleration X: ");
-                              Serial.print(a.acceleration.x);
-                              Serial.print(" m/s^2, Y: ");
-                              Serial.print(a.acceleration.y);
-                              Serial.print(" m/s^2, Z: ");
-                              Serial.print(a.acceleration.z);
-                              Serial.println(" m/s^2");
-                              Serial.print("Rotation X: ");
-                              Serial.print(g.gyro.x);
-                              Serial.print(" rad/s, Y: ");
-                              Serial.print(g.gyro.y);
-                              Serial.print(" rad/s, Z: ");
-                              Serial.print(g.gyro.z);
-                              Serial.println(" rad/s");
-                              Serial.println("Total Acceleration: ");
-                              Serial.println(totalAcceleration);
-  */
-
-                             // Serial.print("Total Rotation: ");
-                              //Serial.println(totalRotation);
-                              
-
-                              
-
-
-
-
-                                
-                              
- if (totalRotation > rotationTreshold)
+  if (totalRotation > rotationTreshold)
   {
-       movimentoDetectado = true; // Movimento detectado
+    movimentoDetectado = true; // Movimento detectado
   }
-   else
+  else
   {
     movimentoDetectado = false; // Sem movimento significativo
   }
-  
-    if (heartRateRead < 60){
-      heartRateRead = 60;
-    }
 
-     // Ajusta a frequência cardíaca baseada no movimento
-    if (movimentoDetectado)
-    {
-      heartRate += BPM_INCREMENT; // Aumenta os batimentos conforme o movimento
-    }
-    else
-    {
-      heartRate -= BPM_DECREMENT; // Diminui os batimentos sem movimento
-    }
+  if (heartRateRead < 60)
+  {
+    heartRateRead = 60;
+  }
 
-    // Aplica os limites mínimos
-    if (heartRate < MIN_HEART_RATE)
-    {
-      heartRate = MIN_HEART_RATE;
-    }
+  // Ajusta a frequência cardíaca baseada no movimento
+  if (movimentoDetectado)
+  {
+    heartRate += BPM_INCREMENT; // Aumenta os batimentos conforme o movimento
+  }
+  else
+  {
+    heartRate -= BPM_DECREMENT; // Diminui os batimentos sem movimento
+  }
 
-    if (spo2 < MIN_SPO2)
-    {
-      spo2 = MIN_SPO2;
-    }
+  // Aplica os limites mínimos
+  if (heartRate < MIN_HEART_RATE)
+  {
+    heartRate = MIN_HEART_RATE;
+  }
+
+  if (spo2 < MIN_SPO2)
+  {
+    spo2 = MIN_SPO2;
+  }
 }
-
 
 /**/
 void leituraMPU6050()
@@ -838,17 +785,11 @@ void leituraMPU6050()
                               g.gyro.y * g.gyro.y +
                               g.gyro.z * g.gyro.z);
   float totalAccelerationMove = sqrtf(a.acceleration.x * a.acceleration.x + a.acceleration.z * a.acceleration.z);
-  // Print the calculated total acceleration and total rotation
-  // Serial.print("Total Acceleration: ");
-  // Serial.println(totalAcceleration);
-  // Serial.print("Total Rotation: ");
-  // Serial.println(totalRotation);
 
   // Check if the total acceleration or total rotation exceeds the threshold
   if ((totalAcceleration > accelerationThreshold || totalRotation > rotationThreshold) && a.acceleration.y < 7)
   {
     handleFallInterrupt(); // Trigger the fall interrupt
-
   }
 
   if (fallRead == 1 && a.acceleration.y > 7.0)
@@ -862,39 +803,23 @@ void leituraMPU6050()
     display.display();
     fallRead = 0; // Reseta a variável fallRead
   }
-  if (a.acceleration.x > accelerationMoveThreshold || a.acceleration.z > accelerationMoveThreshold) {
+  if (a.acceleration.x > accelerationMoveThreshold || a.acceleration.z > accelerationMoveThreshold)
+  {
     heartRateRead += BPM_INCREMENT; // Increase heart rate due to movement
-    if (heartRateRead > 182) {
+    if (heartRateRead > 182)
+    {
       heartRateRead = 182; // Cap the heart rate at 200
     }
-  } else {
+  }
+  else
+  {
     heartRateRead -= BPM_DECREMENT; // Decrease heart rate without significant movement
-    if (heartRateRead < MIN_HEART_RATE) {
+    if (heartRateRead < MIN_HEART_RATE)
+    {
       heartRateRead = MIN_HEART_RATE; // Ensure heart rate does not go below minimum
     }
   }
-/*
-     // Ajusta a frequência cardíaca baseada no movimento
-    if (totalAcceleration>10)
-    {
-      heartRate += BPM_INCREMENT; // Aumenta os batimentos conforme o movimento
-    }
-    else
-    {
-      heartRate -= BPM_DECREMENT; // Diminui os batimentos sem movimento
-    }
-
-    // Aplica os limites mínimos
-    if (heartRate < MIN_HEART_RATE)
-    {
-      heartRate = MIN_HEART_RATE;
-    }
-
-    if (spo2 < MIN_SPO2)
-    {
-      spo2 = MIN_SPO2;
-    }
-*/
+  
 }
 void resetFallDetection()
 {
@@ -986,19 +911,19 @@ void convertString(float sensorDHT, float sensorDS18B20, float bpsData, float ox
 }
 
 const char *ssid = "Gigo 2.4G";
-//const char *ssid = "FIAP-IBM";
-//const char *ssid = "iphone bia (2)";
-// const char *ssid = "A51 de Bruno";
+// const char *ssid = "FIAP-IBM";
+// const char *ssid = "iphone bia (2)";
+//  const char *ssid = "A51 de Bruno";
 const char *password = "18253122Ro";
 //  const char *ssid = "Astro";
-//const char *password = "Challenge@24!";
+// const char *password = "Challenge@24!";
 // const char *password = "fjho4363";
 //  const char *password = "julivanlindo";
 // const char *mqtt_server = "192.168.15.9";
- const char *mqtt_server = "test.mosquitto.org";
+const char *mqtt_server = "test.mosquitto.org";
 // const char *mqtt_server = "192.168.70.103";
-//const char *mqtt_server = "18.118.162.89";
-//const char *mqtt_server = "192.168.179.103";
+// const char *mqtt_server = "18.118.162.89";
+// const char *mqtt_server = "192.168.179.103";
 const char *mqtt_topic1 = "meshguard/id3/triangulation";
 const char *mqtt_topic2 = "meshguard/id3/data";
 //------------------------------------------------ POSTANDO DADOS NO MQTT ---------------------------------------------------
@@ -1066,117 +991,9 @@ void sendToMQTT()
 
 const int httpsPort = 443;
 // Chave de API do Google Maps
-const char *apiKey = "AIzaSyDRK5CTWGoFvQcE3rLYOyRZotcQPuKRAXk";
+const char *apiKey = ""; // Insira sua chave de API do Google Maps
 String mqttMsg;
-/*
-// Função de triangulação
-void allTriangulation() {
-  yield();
-  static unsigned long previousMillis = 0;
-  const long interval = 10000; // 10 segundos
-  unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-
-    // Verifica se já está conectado ao WiFi
-    if (WiFi.status() == WL_DISCONNECTED) {
-      WiFi.begin(ssid, password);
-      Serial.print("Conectando ao WiFi...");
-      unsigned long wifiConnectStart = millis();
-      while (WiFi.status() != WL_CONNECTED) {
-        if (millis() - wifiConnectStart >= 30000) {
-          Serial.println("Falha ao conectar ao WiFi");
-          return;
-        }
-        delay(500);
-        Serial.print(".");
-      }
-      Serial.println("Conectado!");
-    }
-
-    // Inicia a varredura de redes Wi-Fi
-    int numNetworks = WiFi.scanNetworks();
-    StaticJsonDocument<1024> doc;
-    JsonArray wifiAccessPoints = doc.createNestedArray("wifiAccessPoints");
-
-    for (int i = 0; i < numNetworks; i++) {
-      JsonObject ap = wifiAccessPoints.createNestedObject();
-      ap["macAddress"] = WiFi.BSSIDstr(i);
-      ap["signalStrength"] = WiFi.RSSI(i);
-    }
-
-    String json;
-    serializeJson(doc, json);
-
-    // Usando AsyncHTTPRequest para realizar a requisição POST
-    AsyncHTTPRequest* request = new AsyncHTTPRequest();
-    if (request) {
-      request->onReadyStateChange([](void* opt, AsyncHTTPRequest* req, int readyState) {
-        if (readyState == 4) { // 4 significa que a resposta foi recebida
-          if (req->responseHTTPcode() > 0) {
-            String payload = req->responseText();
-            Serial.println("Resposta da API:");
-            Serial.println(payload);
-
-            StaticJsonDocument<512> locationDoc;
-            deserializeJson(locationDoc, payload);
-            float lat = locationDoc["location"]["lat"];
-            float lng = locationDoc["location"]["lng"];
-            Serial.print("Latitude: ");
-            Serial.println(lat, 6);
-            Serial.print("Longitude: ");
-            Serial.println(lng, 6);
-
-            // Preparar o payload para o nó worldmap do Node-RED
-            StaticJsonDocument<256> mqttPayload;
-            mqttPayload["lat"] = lat;
-            mqttPayload["lon"] = lng;
-            mqttPayload["name"] = Nome;
-            mqttPayload["ID"] = NODE_ADDRESS;
-
-            // Criar o payload dos sensores
-            DynamicJsonDocument jsonDoc(1024);
-            jsonDoc["ID"] = NODE_ADDRESS;
-            jsonDoc["temperaturaDHT"] = ambTemp;
-            jsonDoc["temperaturaDS18B20"] = userTemp;
-            jsonDoc["bpsData"] = heartRateRead;
-            jsonDoc["spo2"] = spo2Read;
-            jsonDoc["emergenceButton"] = alertIndicator;
-            jsonDoc["emergenceFall"] = fallRead;
-
-            String jsonString;
-            serializeJson(jsonDoc, jsonString);
-
-            // Serializar dados de localização
-            String mqttMsg;
-            serializeJson(mqttPayload, mqttMsg);
-
-            // Verificar conexão MQTT antes de publicar
-            reconnectMQTT();
-
-            // Publicar no primeiro tópico (localização)
-            if (client.publish(mqtt_topic1, mqttMsg.c_str())) {
-              Serial.println("Publicado no tópico 1 com sucesso");
-            } else {
-              Serial.println("Falha ao publicar no tópico 1");
-            }
-          }
-        }
-      });
-
-      // Preparando a requisição POST
-      String url = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + String(apiKey);
-      if (request->open("POST", url.c_str())) {
-        request->setReqHeader("Content-Type", "application/json");
-        request->send((const uint8_t*)json.c_str(), json.length());
-      } else {
-        Serial.println("Falha ao abrir a requisição HTTP");
-      }
-    }
-  }
-}
-*/
 WiFiClientSecure clientS;
 void allTriangulation()
 {
@@ -1550,7 +1367,7 @@ void checkForUpdates()
 void setup()
 {
   Serial.begin(115200);
-  //digitalWrite(15, HIGH);
+  // digitalWrite(15, HIGH);
   playTripleBeep();
   // Inicializar o primeiro barramento I2C para MAX30105 e OLED
   // Initialize the first I2C bus for MAX30105 and OLED
@@ -1614,7 +1431,7 @@ void loop()
   if (currentMillis - previousMillisIdentific >= intervalIdentific)
   {
     previousMillisIdentific = currentMillis;
-   mostrarIdentific();
+    mostrarIdentific();
   }
 
   if (currentMillis - previousMillisConvertString >= intervalConvertString)
@@ -1641,9 +1458,12 @@ void loop()
   if (currentMillis - previousMillisMAX30102 >= intervalMAX30102)
   {
     previousMillisMAX30102 = currentMillis;
-    if (particleSensor.begin(Wire, I2C_SPEED_FAST, 0x57)) {
-      //leituraMAX30102();
-    } else {
+    if (particleSensor.begin(Wire, I2C_SPEED_FAST, 0x57))
+    {
+      // leituraMAX30102();
+    }
+    else
+    {
       Serial.println(F("MAX30105 was not found. Skipping leituraMAX30102."));
     }
   }
